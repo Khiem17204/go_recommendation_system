@@ -17,3 +17,15 @@ type Tournament struct {
 type APIResponse struct {
 	Data []Tournament `json:"data"`
 }
+
+type Deck struct {
+	ID          int    `json:"id"`
+	Name        string `json:"name"`
+	Archetype   string `json:"archetype"`
+	Author      string `json:"author"`
+	Format      string `json:"format"`
+	Slug        string `json:"slug"`
+	CardCount   int    `json:"card_count"`
+	IsPrivate   bool   `json:"is_private"`
+	IsPublished bool   `json:"is_published"`
+}
