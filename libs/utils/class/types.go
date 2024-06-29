@@ -13,19 +13,14 @@ type Tournament struct {
 	IsApproximatePlayerCount int    `json:"is_approximate_player_count"`
 }
 
-// APIResponse represents the structure of the API response
+// https://ygoprodeck.com/api/tournament/getTournaments.php
 type APIResponse struct {
 	Data []Tournament `json:"data"`
 }
 
 type Deck struct {
-	ID          int    `json:"id"`
-	Name        string `json:"name"`
-	Archetype   string `json:"archetype"`
-	Author      string `json:"author"`
-	Format      string `json:"format"`
-	Slug        string `json:"slug"`
-	CardCount   int    `json:"card_count"`
-	IsPrivate   bool   `json:"is_private"`
-	IsPublished bool   `json:"is_published"`
+	url    string
+	ID     int    `json:"id"`
+	Name   string `json:"name"`
+	Author string `json:"author"`
 }

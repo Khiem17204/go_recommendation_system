@@ -3,17 +3,16 @@ package main
 import (
 	"encoding/json"
 	"fmt"
-	"go-rec-sys/libs/utils"
+	utils "go-rec-sys/libs/utils/class"
 	"io"
 	"net/http"
-	"os"
 )
 
 // API for get tournaments data from ygoprodeck.com
 // https://ygoprodeck.com/api/tournament/getTournaments.php
 
-// function to fetch tournament
-func fetchTournament() ([]utils.Tournament, error) {
+// function to fetch tournament -> move to new file: processTournament.go
+func fetchAllTournament() ([]utils.Tournament, error) {
 	// Send GET request to the https://ygoprodeck.com/api/tournament/getTournaments.php
 	res, err := http.Get("https://ygoprodeck.com/api/tournament/getTournaments.php")
 
@@ -36,16 +35,33 @@ func fetchTournament() ([]utils.Tournament, error) {
 	return data.Data, nil
 }
 
-func main() {
-	tournament, err := fetchTournament()
-	if err != nil {
-		fmt.Fprintf(os.Stderr, "Error: %v\n", err)
-		os.Exit(1)
-	}
-	fmt.Println("Tournaments size", len(tournament))
-	fmt.Println(tournament[4].Name)
-	fmt.Println(tournament[4].ID)
-	// for _, t := range tournament {
-	// 	fmt.Println(t.Name)
-	// }
+// function to fetch tournament detail: all deck -> move to new file: processTournament.go
+func fetchTournament(name string, id int) ([]utils.Deck, error) {
+	// construct endpoint
+	// get process endpoint
+	// parse json into deck object
+	// return []deck object
+	return nil, nil
 }
+
+// func main() {
+// 	// fetch all tournament
+// 	// retrived processed tournament
+// 	// process only new tournament
+// 	// fetch tournament detail
+// 	// process tournament detail
+// 	// fetch deck
+// 	// process deck -> insert into db
+
+// 	tournament, err := fetchAllTournament()
+// 	if err != nil {
+// 		fmt.Fprintf(os.Stderr, "Error: %v\n", err)
+// 		os.Exit(1)
+// 	}
+// 	fmt.Println("Tournaments size", len(tournament))
+// 	fmt.Println(tournament[4].Name)
+// 	fmt.Println(tournament[4].ID)
+// 	// for _, t := range tournament {
+// 	// 	fmt.Println(t.Name)
+// 	// }
+// }
