@@ -24,15 +24,3 @@ type Deck struct {
 	Name   string `json:"name"`
 	Author string `json:"author"`
 }
-
-// card_type: monster, spell, trap
-// card_group: normal, effect, ritual, fusion, synchro, xyz, pendulum, link
-type Card struct {
-	name        string
-	card_type   string
-	card_group  string
-	attack      int
-	defense     int
-	description string
-	image       string
-}
