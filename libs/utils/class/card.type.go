@@ -29,7 +29,11 @@ type RawCardInfo struct {
 	Type          string      `json:"type"`
 	FrameType     string      `json:"frameType"`
 	Desc          string      `json:"desc"`
+	Atk           int         `json:"atk,omitempty"`
+	Def           int         `json:"def,omitempty"`
+	Level         int         `json:"level,omitempty"`
 	Race          string      `json:"race"`
+	Attribute     string      `json:"attribute,omitempty"`
 	Archetype     string      `json:"archetype"`
 	YgoprodeckURL string      `json:"ygoprodeck_url"`
 	CardSets      []CardSet   `json:"card_sets"`

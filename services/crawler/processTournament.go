@@ -18,6 +18,9 @@ type processTournament struct {
 type ProcessTournament interface {
 	getURL() string
 	GetDeck() []utils.Deck
+	NewProcessTournament() *processTournament
+	extractDeckURLs(html string) []string
+	upsertDeck() []int
 }
 
 func NewProcessTournament() *processTournament {
