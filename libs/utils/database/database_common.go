@@ -14,15 +14,14 @@ type DatabaseManager struct {
 	querier db.Querier
 }
 
-func NewDatabaseManager() (*DatabaseManager, error) {
+func NewDatabaseManager(dbName string) (*DatabaseManager, error) {
 
 	connStr := fmt.Sprintf("host=%s port=%s user=%s password=%s dbname=%s sslmode=disable",
 		os.Getenv("DB_HOST"),
 		os.Getenv("DB_PORT"),
-		os.Getenv("DB_USER"),
+		os.Getenv("DB_USERNAME"),
 		os.Getenv("DB_PASSWORD"),
-		os.Getenv("DB_NAME"))
-
+		dbName)
 	conn, err := sql.Open("postgres", connStr)
 	if err != nil {
 		return nil, err
@@ -38,8 +37,16 @@ func NewDatabaseManager() (*DatabaseManager, error) {
 	}, nil
 }
 
-func (dm *DatabaseManager) AddCardToDeck() (bool, error) {
+func (dm *DatabaseManager) AddCardToDeck(card int, deck int) (bool, error) {
 	ctx := context.Background()
-	defer dm.querier.AddCardToDeck(ctx, db.AddCardToDeckParams{})
+	// TODO: check for the type addcardtodeck return
+	fmt.Println("hello")
+	_, err := dm.querier.AddCardToDeck(ctx, db.AddCardToDeckParams{
+		CardID: sql.NullInt64{Int64: int64(card), Valid: true},
+		DeckID: sql.NullInt64{Int64: int64(deck), Valid: true},
+	})
+	if err != nil {
+		return false, err
+	}
 	return true, nil
 }

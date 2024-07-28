@@ -1,19 +1,19 @@
 include .env
 
-postgres:
-	docker run --name $(DB_HOST) -p $(DOCKER_DB_PORT):$(DB_PORT) -e POSTGRES_USER=$(DB_USERNAME) -e POSTGRES_PASSWORD=$(DB_PASSWORD) -d postgres:16.3-alpine3.20
+# postgresurl: change url to update database 
+POSTGRESQL_URL='postgres://$(DB_USERNAME):$(DB_PASSWORD)@$(DB_HOST):$(DB_PORT)/$(DB_NAME)?sslmode=disable' 
 
 createdb:
-	docker exec -it postgres createdb --username=$(DB_USERNAME) --owner=$(DB_USERNAME) go-sys-rec
+	PGPASSWORD=$(DB_PASSWORD) psql -h $(DB_HOST) -p $(DB_PORT) -U $(DB_USERNAME) -c "CREATE DATABASE $(DB_NAME);"
 
 dropdb:
-	docker exec -it postgres dropdb go-sys-rec
+	PGPASSWORD=$(DB_PASSWORD) psql -h $(DB_HOST) -p $(DB_PORT) -U $(DB_USERNAME) -c "DROP DATABASE IF EXISTS $(DB_NAME);"
 
 migrateup:
-	migrate -path db/migration -database "postgresql://$(DB_USERNAME):$(DB_PASSWORD)@localhost:$(DB_PORT)/go-sys-rec?sslmode=disable" -verbose up
+	migrate -path db/migration -database $(POSTGRESQL_URL) -verbose up
 
 migratedown:
-	migrate -path db/migration -database "postgresql://$(DB_USERNAME):$(DB_PASSWORD)@localhost:$(DB_PORT)/go-sys-rec?sslmode=disable" -verbose down
+	migrate -path db/migration -database $(POSTGRESQL_URL) -verbose down
 
 sqlc:
 	sqlc generate
