@@ -6,6 +6,7 @@ import (
 	utils "go-rec-sys/libs/utils/class"
 	"io"
 	"net/http"
+	"os"
 )
 
 // API for get tournaments data from ygoprodeck.com
@@ -36,7 +37,7 @@ func fetchAllTournament() ([]utils.Tournament, error) {
 }
 
 // function to fetch tournament detail: all deck -> move to new file: processTournament.go
-func fetchTournament(name string, id int) ([]utils.Deck, error) {
+func fetchTournament(id string) ([]utils.Deck, error) {
 	// construct endpoint
 	// get process endpoint
 	// parse json into deck object
@@ -44,24 +45,24 @@ func fetchTournament(name string, id int) ([]utils.Deck, error) {
 	return nil, nil
 }
 
-// func main() {
-// 	// fetch all tournament
-// 	// retrived processed tournament
-// 	// process only new tournament
-// 	// fetch tournament detail
-// 	// process tournament detail
-// 	// fetch deck
-// 	// process deck -> insert into db
+func main() {
+	// fetch all tournament
+	// retrived processed tournament
+	// process only new tournament
+	// fetch tournament detail
+	// process tournament detail
+	// fetch deck
+	// process deck -> insert into db
 
-// 	tournament, err := fetchAllTournament()
-// 	if err != nil {
-// 		fmt.Fprintf(os.Stderr, "Error: %v\n", err)
-// 		os.Exit(1)
-// 	}
-// 	fmt.Println("Tournaments size", len(tournament))
-// 	fmt.Println(tournament[4].Name)
-// 	fmt.Println(tournament[4].ID)
-// 	// for _, t := range tournament {
-// 	// 	fmt.Println(t.Name)
-// 	// }
-// }
+	tournament, err := fetchAllTournament()
+	if err != nil {
+		fmt.Fprintf(os.Stderr, "Error: %v\n", err)
+		os.Exit(1)
+	}
+	fmt.Println("Tournaments size", len(tournament))
+	fmt.Println(tournament[4].Name)
+	fmt.Println(tournament[4].ID)
+	// for _, t := range tournament {
+	// 	fmt.Println(t.Name)
+	// }
+}

@@ -1,19 +1,20 @@
 package main
 
 import (
+	"encoding/json"
 	"fmt"
 	utils "go-rec-sys/libs/utils/class"
+	database "go-rec-sys/libs/utils/database"
 	"io"
 	"net/http"
-	"regexp"
-	"strconv"
 	"strings"
 )
 
+// https://ygoprodeck.com/api/tournament/getTournament.php?id=1968/
+
 type processTournament struct {
-	baseURL        string
-	tournamentName string
-	tournamentID   int
+	tournamentID string
+	databaseConn *database.DatabaseManager
 }
 type ProcessTournament interface {
 	getURL() string
@@ -23,36 +24,15 @@ type ProcessTournament interface {
 	upsertDeck() []int
 }
 
-func NewProcessTournament() *processTournament {
+func NewProcessTournament(id string) *processTournament {
 	return &processTournament{
-		baseURL: "https://ygoprodeck.com",
+		tournamentID: id,
 	}
-}
-
-func (pt *processTournament) getURL() string {
-	return pt.baseURL + "/tournament/" + strings.ToLower(strings.ReplaceAll(pt.tournamentName, " ", "-")) + "-" + strconv.Itoa(pt.tournamentID)
-}
-
-func (pt *processTournament) extractDeckURLs(html string) []string {
-	// Regular expression to match href attributes containing "/deck/"
-	re := regexp.MustCompile(`href="(/deck/[^"]*)"`)
-
-	// Find all matches
-	matches := re.FindAllStringSubmatch(html, -1)
-
-	// Extract the URLs from the matches
-	var urls []string
-	for _, match := range matches {
-		if len(match) > 1 {
-			urls = append(urls, pt.baseURL+match[1])
-		}
-	}
-	return urls
 }
 
 func (pt *processTournament) upsertDeck() []int {
 	// Send GET request to the tournament URL
-	res, err := http.Get(pt.getURL())
+	res, err := http.Get("https://ygoprodeck.com/api/tournament/getTournament.php?id=" + pt.tournamentID)
 	if err != nil {
 		fmt.Println("Error:", err)
 		return nil
@@ -63,37 +43,46 @@ func (pt *processTournament) upsertDeck() []int {
 		fmt.Println("Error:", readErr)
 		return nil
 	}
-	deckURL := pt.extractDeckURLs(string(body))
+	var tournament utils.Tournament
+	err = json.Unmarshal(body, &tournament)
+	pt.databaseConn.AddCardToDeck()
+	if err != nil {
+		fmt.Println("Error parsing JSON:", err)
+		return nil
+	}
 
 	// for every deck URL, create a new processDeck object -> do upsert operation -> return list of deckID in RDS
-	for _, url := range deckURL {
-		// hash deck name+id to get deckID and insert into RDS
-
-		// Create a new processDeck object
-		pd := NewProcessDeck(url)
-		// upsert operation, can ultilize go routine to speed up the process by running concurrently all the upsert operation
+	for _, deck := range tournament.Listings {
+		if deck.PrettyURL != nil {
+			// Create a new processDeck object
+			url_splited := strings.Split(*deck.PrettyURL, "-")
+			deck_id := url_splited[len(url_splited)-1]
+			// upsert operation, can ultilize go routine to speed up the process by running concurrently all the upsert operation
+			pd := NewProcessDeck(deck_id)
+			go pd.upsert()
+		}
 
 	}
 	return nil
 }
 
-func main() {
-	// https://ygoprodeck.com/tournament/niagara-falls-wcq-regional-1935
-	pt := NewProcessTournament()
-	pt.tournamentName = "niagara falls wcq regional"
-	pt.tournamentID = 1935
-	url := pt.getURL()
-	res, err := http.Get(url)
-	if err != nil {
-		// Handle the error
-		fmt.Println("Error:", err)
-		return
-	}
-	defer res.Body.Close()
-	// Read the response body
-	body, readErr := io.ReadAll(res.Body)
-	deckURL := pt.extractDeckURLs(string(body))
+// func main() {
+// 	// https://ygoprodeck.com/tournament/niagara-falls-wcq-regional-1935
+// 	pt := NewProcessTournament()
+// 	pt.tournamentName = "niagara falls wcq regional"
+// 	pt.tournamentID = 1935
+// 	url := pt.getURL()
+// 	res, err := http.Get(url)
+// 	if err != nil {
+// 		// Handle the error
+// 		fmt.Println("Error:", err)
+// 		return
+// 	}
+// 	defer res.Body.Close()
+// 	// Read the response body
+// 	body, readErr := io.ReadAll(res.Body)
+// 	deckURL := pt.extractDeckURLs(string(body))
 
-	fmt.Println(deckURL[0], readErr)
+// 	fmt.Println(deckURL[0], readErr)
 
-}
+// }

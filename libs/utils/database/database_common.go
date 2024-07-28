@@ -1,54 +1,45 @@
 package database
 
 import (
+	"context"
 	"database/sql"
 	"fmt"
+	db "go-rec-sys/db/sqlc"
 	"os"
 
 	_ "github.com/lib/pq"
 )
 
 type DatabaseManager struct {
-	db       *sql.DB
-	username string
-	password string
-	host     string
-	dbname   string
+	querier db.Querier
 }
 
 func NewDatabaseManager() (*DatabaseManager, error) {
-	dm := &DatabaseManager{
-		username: os.Getenv("DB_USER"),
-		password: os.Getenv("DB_PASSWORD"),
-		host:     os.Getenv("DB_HOST"),
-	}
 
-	connStr := fmt.Sprintf("user=%s password=%s host=%s dbname=%s sslmode=disable",
-		dm.username, dm.password, dm.host, dm.dbname)
+	connStr := fmt.Sprintf("host=%s port=%s user=%s password=%s dbname=%s sslmode=disable",
+		os.Getenv("DB_HOST"),
+		os.Getenv("DB_PORT"),
+		os.Getenv("DB_USER"),
+		os.Getenv("DB_PASSWORD"),
+		os.Getenv("DB_NAME"))
 
-	db, err := sql.Open("postgres", connStr)
+	conn, err := sql.Open("postgres", connStr)
 	if err != nil {
 		return nil, err
 	}
 
-	err = db.Ping()
+	err = conn.Ping()
 	if err != nil {
 		return nil, err
 	}
 
-	dm.db = db
-	return dm, nil
+	return &DatabaseManager{
+		querier: db.New(conn),
+	}, nil
 }
 
-func (dm *DatabaseManager) Close() {
-	dm.db.Close()
-}
-
-func (dm *DatabaseManager) ExecuteSQL(query string, args ...interface{}) (sql.Result, error) {
-	return dm.db.Exec(query, args...)
-}
-
-func (dm *DatabaseManager) CreateDatabase(dbname string) error {
-	_, err := dm.ExecuteSQL(fmt.Sprintf("CREATE DATABASE %s", dbname))
-	return err
+func (dm *DatabaseManager) AddCardToDeck() (bool, error) {
+	ctx := context.Background()
+	defer dm.querier.AddCardToDeck(ctx, db.AddCardToDeckParams{})
+	return true, nil
 }
