@@ -6,7 +6,6 @@ import (
 	utils "go-rec-sys/libs/utils/class"
 	"io"
 	"net/http"
-	"os"
 )
 
 // API for get tournaments data from ygoprodeck.com
@@ -46,23 +45,25 @@ func fetchTournament(id string) ([]utils.Deck, error) {
 }
 
 func main() {
-	// fetch all tournament
-	// retrived processed tournament
-	// process only new tournament
-	// fetch tournament detail
-	// process tournament detail
-	// fetch deck
-	// process deck -> insert into db
+	// https://ygoprodeck.com/tournament/niagara-falls-wcq-regional-1935
+	pt := NewProcessTournament("1935")
+	fmt.Println("start upsert deck")
+	pt.upsertDeck()
+	fmt.Println("finish upsert deck")
+	// 	pt.tournamentName = "niagara falls wcq regional"
+	// 	pt.tournamentID = 1935
+	// 	url := pt.getURL()
+	// 	res, err := http.Get(url)
+	// 	if err != nil {
+	// 		// Handle the error
+	// 		fmt.Println("Error:", err)
+	// 		return
+	// 	}
+	// 	defer res.Body.Close()
+	// 	// Read the response body
+	// 	body, readErr := io.ReadAll(res.Body)
+	// 	deckURL := pt.extractDeckURLs(string(body))
 
-	tournament, err := fetchAllTournament()
-	if err != nil {
-		fmt.Fprintf(os.Stderr, "Error: %v\n", err)
-		os.Exit(1)
-	}
-	fmt.Println("Tournaments size", len(tournament))
-	fmt.Println(tournament[4].Name)
-	fmt.Println(tournament[4].ID)
-	// for _, t := range tournament {
-	// 	fmt.Println(t.Name)
-	// }
+	// 	fmt.Println(deckURL[0], readErr)
+
 }

@@ -19,14 +19,20 @@ type processTournament struct {
 type ProcessTournament interface {
 	getURL() string
 	GetDeck() []utils.Deck
-	NewProcessTournament() *processTournament
+	// NewProcessTournament() *processTournament
 	extractDeckURLs(html string) []string
 	upsertDeck() []int
 }
 
 func NewProcessTournament(id string) *processTournament {
+	databaseConn, err := database.NewDatabaseManager("go_rec_sys")
+	if err != nil {
+		fmt.Println("Error:", err)
+		return nil
+	}
 	return &processTournament{
 		tournamentID: id,
+		databaseConn: databaseConn,
 	}
 }
 
@@ -44,22 +50,24 @@ func (pt *processTournament) upsertDeck() []int {
 		return nil
 	}
 	var tournament utils.Tournament
+	// TODO: accept tournament data, with one column to verify if the tournament is already processed
 	err = json.Unmarshal(body, &tournament)
-	pt.databaseConn.AddCardToDeck()
+
 	if err != nil {
 		fmt.Println("Error parsing JSON:", err)
 		return nil
 	}
-
+	fmt.Println("khiem 1")
 	// for every deck URL, create a new processDeck object -> do upsert operation -> return list of deckID in RDS
 	for _, deck := range tournament.Listings {
 		if deck.PrettyURL != nil {
 			// Create a new processDeck object
 			url_splited := strings.Split(*deck.PrettyURL, "-")
 			deck_id := url_splited[len(url_splited)-1]
+			fmt.Println("deck_id:", deck_id)
 			// upsert operation, can ultilize go routine to speed up the process by running concurrently all the upsert operation
 			pd := NewProcessDeck(deck_id)
-			go pd.upsert()
+			pd.upsert()
 		}
 
 	}
