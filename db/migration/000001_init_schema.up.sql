@@ -17,14 +17,15 @@ CREATE TABLE "decks" (
   "id" bigint PRIMARY KEY,
   "deck_name" varchar NOT NULL,
   "rank" int NOT NULL,
-  "tournament_id" bigint,
+  "tournament_id" bigint NOT NULL,
   "raw_deck_info" varchar NOT NULL
 );
 
 CREATE TABLE "cards_in_deck" (
   "id" bigint PRIMARY KEY,
-  "card_id" bigint,
-  "deck_id" bigint
+  "card_id" bigint NOT NULL,
+  "deck_id" bigint NOT NULL,
+  "card_count" int NOT NULL
 );
 
 CREATE TABLE "tournaments" (
@@ -42,6 +43,10 @@ CREATE INDEX ON "cards" ("id");
 CREATE INDEX ON "decks" ("id");
 
 CREATE INDEX ON "decks" ("tournament_id");
+
+CREATE INDEX ON "cards_in_deck" ("card_id");
+
+CREATE INDEX ON "cards_in_deck" ("deck_id");
 
 CREATE INDEX ON "tournaments" ("id");
 

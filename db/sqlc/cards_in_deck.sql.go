@@ -7,46 +7,61 @@ package db
 
 import (
 	"context"
-	"database/sql"
 )
 
 const addCardToDeck = `-- name: AddCardToDeck :one
 INSERT INTO cards_in_deck (
+    id,
     card_id,
-    deck_id
+    deck_id,
+    card_count
 ) VALUES (
     $1,
-    $2
-) RETURNING id, card_id, deck_id
+    $2,
+    $3,
+    $4
+) RETURNING id, card_id, deck_id, card_count
 `
 
 type AddCardToDeckParams struct {
-	CardID sql.NullInt64 `json:"card_id"`
-	DeckID sql.NullInt64 `json:"deck_id"`
+	ID        int64 `json:"id"`
+	CardID    int64 `json:"card_id"`
+	DeckID    int64 `json:"deck_id"`
+	CardCount int32 `json:"card_count"`
 }
 
 func (q *Queries) AddCardToDeck(ctx context.Context, arg AddCardToDeckParams) (CardsInDeck, error) {
-	row := q.db.QueryRowContext(ctx, addCardToDeck, arg.CardID, arg.DeckID)
+	row := q.db.QueryRowContext(ctx, addCardToDeck,
+		arg.ID,
+		arg.CardID,
+		arg.DeckID,
+		arg.CardCount,
+	)
 	var i CardsInDeck
-	err := row.Scan(&i.ID, &i.CardID, &i.DeckID)
+	err := row.Scan(
+		&i.ID,
+		&i.CardID,
+		&i.DeckID,
+		&i.CardCount,
+	)
 	return i, err
 }
 
 const countCardInDeck = `-- name: CountCardInDeck :one
-SELECT COUNT(*) FROM cards_in_deck
+SELECT card_count FROM cards_in_deck
 WHERE card_id = $1 AND deck_id = $2
 `
 
 type CountCardInDeckParams struct {
-	CardID sql.NullInt64 `json:"card_id"`
-	DeckID sql.NullInt64 `json:"deck_id"`
+	CardID int64 `json:"card_id"`
+	DeckID int64 `json:"deck_id"`
 }
 
-func (q *Queries) CountCardInDeck(ctx context.Context, arg CountCardInDeckParams) (int64, error) {
+func (q *Queries) CountCardInDeck(ctx context.Context, arg CountCardInDeckParams) (int32, error) {
 	row := q.db.QueryRowContext(ctx, countCardInDeck, arg.CardID, arg.DeckID)
-	var count int64
-	err := row.Scan(&count)
-	return count, err
+	var card_count int32
+	err := row.Scan(&card_count)
+	return card_count, err
 }
 
 const deleteAllCardsFromDeck = `-- name: DeleteAllCardsFromDeck :exec
@@ -54,7 +69,7 @@ DELETE FROM cards_in_deck
 WHERE deck_id = $1
 `
 
-func (q *Queries) DeleteAllCardsFromDeck(ctx context.Context, deckID sql.NullInt64) error {
+func (q *Queries) DeleteAllCardsFromDeck(ctx context.Context, deckID int64) error {
 	_, err := q.db.ExecContext(ctx, deleteAllCardsFromDeck, deckID)
 	return err
 }
@@ -64,7 +79,7 @@ DELETE FROM cards_in_deck
 WHERE card_id = $1
 `
 
-func (q *Queries) DeleteAllDecksFromCard(ctx context.Context, cardID sql.NullInt64) error {
+func (q *Queries) DeleteAllDecksFromCard(ctx context.Context, cardID int64) error {
 	_, err := q.db.ExecContext(ctx, deleteAllDecksFromCard, cardID)
 	return err
 }
@@ -75,8 +90,8 @@ WHERE card_id = $1 AND deck_id = $2
 `
 
 type DeleteCardFromDeckParams struct {
-	CardID sql.NullInt64 `json:"card_id"`
-	DeckID sql.NullInt64 `json:"deck_id"`
+	CardID int64 `json:"card_id"`
+	DeckID int64 `json:"deck_id"`
 }
 
 func (q *Queries) DeleteCardFromDeck(ctx context.Context, arg DeleteCardFromDeckParams) error {
@@ -85,11 +100,11 @@ func (q *Queries) DeleteCardFromDeck(ctx context.Context, arg DeleteCardFromDeck
 }
 
 const getCardsFromDeck = `-- name: GetCardsFromDeck :many
-SELECT id, card_id, deck_id FROM cards_in_deck
+SELECT id, card_id, deck_id, card_count FROM cards_in_deck
 WHERE deck_id = $1
 `
 
-func (q *Queries) GetCardsFromDeck(ctx context.Context, deckID sql.NullInt64) ([]CardsInDeck, error) {
+func (q *Queries) GetCardsFromDeck(ctx context.Context, deckID int64) ([]CardsInDeck, error) {
 	rows, err := q.db.QueryContext(ctx, getCardsFromDeck, deckID)
 	if err != nil {
 		return nil, err
@@ -98,7 +113,12 @@ func (q *Queries) GetCardsFromDeck(ctx context.Context, deckID sql.NullInt64) ([
 	items := []CardsInDeck{}
 	for rows.Next() {
 		var i CardsInDeck
-		if err := rows.Scan(&i.ID, &i.CardID, &i.DeckID); err != nil {
+		if err := rows.Scan(
+			&i.ID,
+			&i.CardID,
+			&i.DeckID,
+			&i.CardCount,
+		); err != nil {
 			return nil, err
 		}
 		items = append(items, i)
@@ -113,11 +133,11 @@ func (q *Queries) GetCardsFromDeck(ctx context.Context, deckID sql.NullInt64) ([
 }
 
 const getDecksFromCard = `-- name: GetDecksFromCard :many
-SELECT id, card_id, deck_id FROM cards_in_deck
+SELECT id, card_id, deck_id, card_count FROM cards_in_deck
 WHERE card_id = $1
 `
 
-func (q *Queries) GetDecksFromCard(ctx context.Context, cardID sql.NullInt64) ([]CardsInDeck, error) {
+func (q *Queries) GetDecksFromCard(ctx context.Context, cardID int64) ([]CardsInDeck, error) {
 	rows, err := q.db.QueryContext(ctx, getDecksFromCard, cardID)
 	if err != nil {
 		return nil, err
@@ -126,7 +146,12 @@ func (q *Queries) GetDecksFromCard(ctx context.Context, cardID sql.NullInt64) ([
 	items := []CardsInDeck{}
 	for rows.Next() {
 		var i CardsInDeck
-		if err := rows.Scan(&i.ID, &i.CardID, &i.DeckID); err != nil {
+		if err := rows.Scan(
+			&i.ID,
+			&i.CardID,
+			&i.DeckID,
+			&i.CardCount,
+		); err != nil {
 			return nil, err
 		}
 		items = append(items, i)

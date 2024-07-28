@@ -25,17 +25,18 @@ type Card struct {
 }
 
 type CardsInDeck struct {
-	ID     int64         `json:"id"`
-	CardID sql.NullInt64 `json:"card_id"`
-	DeckID sql.NullInt64 `json:"deck_id"`
+	ID        int64 `json:"id"`
+	CardID    int64 `json:"card_id"`
+	DeckID    int64 `json:"deck_id"`
+	CardCount int32 `json:"card_count"`
 }
 
 type Deck struct {
-	ID           int64         `json:"id"`
-	DeckName     string        `json:"deck_name"`
-	Rank         int32         `json:"rank"`
-	TournamentID sql.NullInt64 `json:"tournament_id"`
-	RawDeckInfo  string        `json:"raw_deck_info"`
+	ID           int64  `json:"id"`
+	DeckName     string `json:"deck_name"`
+	Rank         int32  `json:"rank"`
+	TournamentID int64  `json:"tournament_id"`
+	RawDeckInfo  string `json:"raw_deck_info"`
 }
 
 type Tournament struct {

@@ -7,7 +7,6 @@ package db
 
 import (
 	"context"
-	"database/sql"
 )
 
 const createDeck = `-- name: CreateDeck :one
@@ -27,11 +26,11 @@ INSERT INTO decks (
 `
 
 type CreateDeckParams struct {
-	ID           int64         `json:"id"`
-	DeckName     string        `json:"deck_name"`
-	Rank         int32         `json:"rank"`
-	TournamentID sql.NullInt64 `json:"tournament_id"`
-	RawDeckInfo  string        `json:"raw_deck_info"`
+	ID           int64  `json:"id"`
+	DeckName     string `json:"deck_name"`
+	Rank         int32  `json:"rank"`
+	TournamentID int64  `json:"tournament_id"`
+	RawDeckInfo  string `json:"raw_deck_info"`
 }
 
 func (q *Queries) CreateDeck(ctx context.Context, arg CreateDeckParams) (Deck, error) {

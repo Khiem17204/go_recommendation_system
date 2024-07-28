@@ -6,25 +6,24 @@ package db
 
 import (
 	"context"
-	"database/sql"
 )
 
 type Querier interface {
 	AddCardToDeck(ctx context.Context, arg AddCardToDeckParams) (CardsInDeck, error)
-	CountCardInDeck(ctx context.Context, arg CountCardInDeckParams) (int64, error)
+	CountCardInDeck(ctx context.Context, arg CountCardInDeckParams) (int32, error)
 	CreateCard(ctx context.Context, arg CreateCardParams) (Card, error)
 	CreateDeck(ctx context.Context, arg CreateDeckParams) (Deck, error)
 	CreateTournament(ctx context.Context, arg CreateTournamentParams) (Tournament, error)
-	DeleteAllCardsFromDeck(ctx context.Context, deckID sql.NullInt64) error
-	DeleteAllDecksFromCard(ctx context.Context, cardID sql.NullInt64) error
+	DeleteAllCardsFromDeck(ctx context.Context, deckID int64) error
+	DeleteAllDecksFromCard(ctx context.Context, cardID int64) error
 	DeleteCard(ctx context.Context, id int64) error
 	DeleteCardFromDeck(ctx context.Context, arg DeleteCardFromDeckParams) error
 	DeleteDeck(ctx context.Context, id int64) error
 	DeleteTournament(ctx context.Context, id int64) error
 	GetCard(ctx context.Context, id int64) (Card, error)
-	GetCardsFromDeck(ctx context.Context, deckID sql.NullInt64) ([]CardsInDeck, error)
+	GetCardsFromDeck(ctx context.Context, deckID int64) ([]CardsInDeck, error)
 	GetDeck(ctx context.Context, id int64) (Deck, error)
-	GetDecksFromCard(ctx context.Context, cardID sql.NullInt64) ([]CardsInDeck, error)
+	GetDecksFromCard(ctx context.Context, cardID int64) ([]CardsInDeck, error)
 	GetTournament(ctx context.Context, id int64) (Tournament, error)
 	ListCards(ctx context.Context, arg ListCardsParams) ([]Card, error)
 	ListDecks(ctx context.Context, arg ListDecksParams) ([]Deck, error)

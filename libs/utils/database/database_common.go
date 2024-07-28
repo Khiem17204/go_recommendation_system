@@ -39,8 +39,6 @@ func NewDatabaseManager(dbName string) (*DatabaseManager, error) {
 
 func (dm *DatabaseManager) AddCardToDeck(card int, deck int) (bool, error) {
 	ctx := context.Background()
-	// TODO: check for the type addcardtodeck return
-	fmt.Println("hello")
 	_, err := dm.querier.AddCardToDeck(ctx, db.AddCardToDeckParams{
 		CardID: sql.NullInt64{Int64: int64(card), Valid: true},
 		DeckID: sql.NullInt64{Int64: int64(deck), Valid: true},

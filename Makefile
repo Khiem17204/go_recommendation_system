@@ -1,6 +1,5 @@
 include .env
 
-# postgresurl: change url to update database 
 POSTGRESQL_URL='postgres://$(DB_USERNAME):$(DB_PASSWORD)@$(DB_HOST):$(DB_PORT)/$(DB_NAME)?sslmode=disable' 
 
 createdb:
@@ -8,6 +7,12 @@ createdb:
 
 dropdb:
 	PGPASSWORD=$(DB_PASSWORD) psql -h $(DB_HOST) -p $(DB_PORT) -U $(DB_USERNAME) -c "DROP DATABASE IF EXISTS $(DB_NAME);"
+
+docker_createdb:
+	docker exec -it postgres createdb --username=$(DB_USERNAME) --owner=$(DB_USERNAME) $(DB_NAME)
+
+docker_dropdb:
+	docker exec -it postgres dropdb $(DB_NAME)
 
 migrateup:
 	migrate -path db/migration -database $(POSTGRESQL_URL) -verbose up
@@ -18,4 +23,4 @@ migratedown:
 sqlc:
 	sqlc generate
 
-.PHONY: postgres createdb dropdb migrateup migratedown sqlc
+.PHONY: postgres createdb dropdb docker_createdb docker_dropdb migrateup migratedown sqlc
