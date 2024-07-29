@@ -25,7 +25,6 @@ type Card struct {
 }
 
 type CardsInDeck struct {
-	ID        int64 `json:"id"`
 	CardID    int64 `json:"card_id"`
 	DeckID    int64 `json:"deck_id"`
 	CardCount int32 `json:"card_count"`
@@ -34,7 +33,7 @@ type CardsInDeck struct {
 type Deck struct {
 	ID           int64  `json:"id"`
 	DeckName     string `json:"deck_name"`
-	Rank         int32  `json:"rank"`
+	Rank         string `json:"rank"`
 	TournamentID int64  `json:"tournament_id"`
 	RawDeckInfo  string `json:"raw_deck_info"`
 }

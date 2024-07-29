@@ -1,14 +1,12 @@
 -- name: AddCardToDeck :one
 INSERT INTO cards_in_deck (
-    id,
     card_id,
     deck_id,
     card_count
 ) VALUES (
     $1,
     $2,
-    $3,
-    $4
+    $3
 ) RETURNING *;
 
 -- name: GetCardsFromDeck :many

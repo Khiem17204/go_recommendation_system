@@ -6,9 +6,13 @@ type APIResponse struct {
 }
 
 type Deck struct {
-	Maindeck  []string `json:"maindeck"`
-	Extradeck []string `json:"extradeck"`
-	Sidedeck  []string `json:"sidedeck"`
+	DeckName     string   `json:"deckname"`
+	ID           int      `json:"decknumber"`
+	Maindeck     []string `json:"maindeck"`
+	Extradeck    []string `json:"extradeck"`
+	Sidedeck     []string `json:"sidedeck"`
+	Rank         string   `json:"tournamentPlacement"`
+	TournamentID string   `json:"tournamentslug"`
 }
 
 type Tournament struct {

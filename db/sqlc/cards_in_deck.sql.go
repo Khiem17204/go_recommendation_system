@@ -11,39 +11,26 @@ import (
 
 const addCardToDeck = `-- name: AddCardToDeck :one
 INSERT INTO cards_in_deck (
-    id,
     card_id,
     deck_id,
     card_count
 ) VALUES (
     $1,
     $2,
-    $3,
-    $4
-) RETURNING id, card_id, deck_id, card_count
+    $3
+) RETURNING card_id, deck_id, card_count
 `
 
 type AddCardToDeckParams struct {
-	ID        int64 `json:"id"`
 	CardID    int64 `json:"card_id"`
 	DeckID    int64 `json:"deck_id"`
 	CardCount int32 `json:"card_count"`
 }
 
 func (q *Queries) AddCardToDeck(ctx context.Context, arg AddCardToDeckParams) (CardsInDeck, error) {
-	row := q.db.QueryRowContext(ctx, addCardToDeck,
-		arg.ID,
-		arg.CardID,
-		arg.DeckID,
-		arg.CardCount,
-	)
+	row := q.db.QueryRowContext(ctx, addCardToDeck, arg.CardID, arg.DeckID, arg.CardCount)
 	var i CardsInDeck
-	err := row.Scan(
-		&i.ID,
-		&i.CardID,
-		&i.DeckID,
-		&i.CardCount,
-	)
+	err := row.Scan(&i.CardID, &i.DeckID, &i.CardCount)
 	return i, err
 }
 
@@ -100,7 +87,7 @@ func (q *Queries) DeleteCardFromDeck(ctx context.Context, arg DeleteCardFromDeck
 }
 
 const getCardsFromDeck = `-- name: GetCardsFromDeck :many
-SELECT id, card_id, deck_id, card_count FROM cards_in_deck
+SELECT card_id, deck_id, card_count FROM cards_in_deck
 WHERE deck_id = $1
 `
 
@@ -113,12 +100,7 @@ func (q *Queries) GetCardsFromDeck(ctx context.Context, deckID int64) ([]CardsIn
 	items := []CardsInDeck{}
 	for rows.Next() {
 		var i CardsInDeck
-		if err := rows.Scan(
-			&i.ID,
-			&i.CardID,
-			&i.DeckID,
-			&i.CardCount,
-		); err != nil {
+		if err := rows.Scan(&i.CardID, &i.DeckID, &i.CardCount); err != nil {
 			return nil, err
 		}
 		items = append(items, i)
@@ -133,7 +115,7 @@ func (q *Queries) GetCardsFromDeck(ctx context.Context, deckID int64) ([]CardsIn
 }
 
 const getDecksFromCard = `-- name: GetDecksFromCard :many
-SELECT id, card_id, deck_id, card_count FROM cards_in_deck
+SELECT card_id, deck_id, card_count FROM cards_in_deck
 WHERE card_id = $1
 `
 
@@ -146,12 +128,7 @@ func (q *Queries) GetDecksFromCard(ctx context.Context, cardID int64) ([]CardsIn
 	items := []CardsInDeck{}
 	for rows.Next() {
 		var i CardsInDeck
-		if err := rows.Scan(
-			&i.ID,
-			&i.CardID,
-			&i.DeckID,
-			&i.CardCount,
-		); err != nil {
+		if err := rows.Scan(&i.CardID, &i.DeckID, &i.CardCount); err != nil {
 			return nil, err
 		}
 		items = append(items, i)

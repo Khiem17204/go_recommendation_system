@@ -28,7 +28,7 @@ INSERT INTO decks (
 type CreateDeckParams struct {
 	ID           int64  `json:"id"`
 	DeckName     string `json:"deck_name"`
-	Rank         int32  `json:"rank"`
+	Rank         string `json:"rank"`
 	TournamentID int64  `json:"tournament_id"`
 	RawDeckInfo  string `json:"raw_deck_info"`
 }

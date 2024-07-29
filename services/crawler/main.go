@@ -48,7 +48,7 @@ func main() {
 	// https://ygoprodeck.com/tournament/niagara-falls-wcq-regional-1935
 	pt := NewProcessTournament("1935")
 	fmt.Println("start upsert deck")
-	pt.upsertDeck()
+	pt.processTournament()
 	fmt.Println("finish upsert deck")
 	// 	pt.tournamentName = "niagara falls wcq regional"
 	// 	pt.tournamentID = 1935

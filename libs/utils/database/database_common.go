@@ -37,12 +37,40 @@ func NewDatabaseManager(dbName string) (*DatabaseManager, error) {
 	}, nil
 }
 
-func (dm *DatabaseManager) AddCardToDeck(card int, deck int) (bool, error) {
+func (dm *DatabaseManager) AddCardToDeck(card int, deck int, count int) (bool, error) {
 	ctx := context.Background()
 	_, err := dm.querier.AddCardToDeck(ctx, db.AddCardToDeckParams{
-		CardID: sql.NullInt64{Int64: int64(card), Valid: true},
-		DeckID: sql.NullInt64{Int64: int64(deck), Valid: true},
+		CardID:    int64(card),
+		DeckID:    int64(deck),
+		CardCount: int32(count),
 	})
+	if err != nil {
+		return false, err
+	}
+	return true, nil
+}
+
+func (dm *DatabaseManager) AddCard(data db.CreateCardParams) (bool, error) {
+	ctx := context.Background()
+	_, err := dm.querier.CreateCard(ctx, data)
+	if err != nil {
+		return false, err
+	}
+	return true, nil
+}
+
+func (dm *DatabaseManager) AddDeck(data db.CreateDeckParams) (bool, error) {
+	ctx := context.Background()
+	_, err := dm.querier.CreateDeck(ctx, data)
+	if err != nil {
+		return false, err
+	}
+	return true, nil
+}
+
+func (dm *DatabaseManager) AddTournament(data db.CreateTournamentParams) (bool, error) {
+	ctx := context.Background()
+	_, err := dm.querier.CreateTournament(ctx, data)
 	if err != nil {
 		return false, err
 	}

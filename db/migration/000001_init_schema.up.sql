@@ -16,13 +16,12 @@ CREATE TABLE "cards" (
 CREATE TABLE "decks" (
   "id" bigint PRIMARY KEY,
   "deck_name" varchar NOT NULL,
-  "rank" int NOT NULL,
+  "rank" varchar NOT NULL,
   "tournament_id" bigint NOT NULL,
   "raw_deck_info" varchar NOT NULL
 );
 
 CREATE TABLE "cards_in_deck" (
-  "id" bigint PRIMARY KEY,
   "card_id" bigint NOT NULL,
   "deck_id" bigint NOT NULL,
   "card_count" int NOT NULL
@@ -50,8 +49,8 @@ CREATE INDEX ON "cards_in_deck" ("deck_id");
 
 CREATE INDEX ON "tournaments" ("id");
 
-ALTER TABLE "decks" ADD FOREIGN KEY ("tournament_id") REFERENCES "tournaments" ("id");
+-- ALTER TABLE "decks" ADD FOREIGN KEY ("tournament_id") REFERENCES "tournaments" ("id");
 
-ALTER TABLE "cards_in_deck" ADD FOREIGN KEY ("card_id") REFERENCES "cards" ("id");
+-- ALTER TABLE "cards_in_deck" ADD FOREIGN KEY ("card_id") REFERENCES "cards" ("id");
 
-ALTER TABLE "cards_in_deck" ADD FOREIGN KEY ("deck_id") REFERENCES "decks" ("id");
+-- ALTER TABLE "cards_in_deck" ADD FOREIGN KEY ("deck_id") REFERENCES "decks" ("id");
