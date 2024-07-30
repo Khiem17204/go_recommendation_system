@@ -8,6 +8,7 @@ package db
 import (
 	"context"
 	"database/sql"
+	"encoding/json"
 )
 
 const createCard = `-- name: CreateCard :one
@@ -41,18 +42,18 @@ INSERT INTO cards (
 `
 
 type CreateCardParams struct {
-	ID          int64          `json:"id"`
-	Name        string         `json:"name"`
-	Type        string         `json:"type"`
-	FrameType   string         `json:"frame_type"`
-	Archetype   sql.NullString `json:"archetype"`
-	Attribute   sql.NullString `json:"attribute"`
-	Race        sql.NullString `json:"race"`
-	Level       sql.NullInt32  `json:"level"`
-	Attack      sql.NullInt32  `json:"attack"`
-	Defense     sql.NullInt32  `json:"defense"`
-	Description string         `json:"description"`
-	RawCardInfo string         `json:"raw_card_info"`
+	ID          int64           `json:"id"`
+	Name        string          `json:"name"`
+	Type        string          `json:"type"`
+	FrameType   string          `json:"frame_type"`
+	Archetype   sql.NullString  `json:"archetype"`
+	Attribute   sql.NullString  `json:"attribute"`
+	Race        sql.NullString  `json:"race"`
+	Level       sql.NullInt32   `json:"level"`
+	Attack      sql.NullInt32   `json:"attack"`
+	Defense     sql.NullInt32   `json:"defense"`
+	Description string          `json:"description"`
+	RawCardInfo json.RawMessage `json:"raw_card_info"`
 }
 
 func (q *Queries) CreateCard(ctx context.Context, arg CreateCardParams) (Card, error) {

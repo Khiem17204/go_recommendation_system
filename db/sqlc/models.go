@@ -6,22 +6,23 @@ package db
 
 import (
 	"database/sql"
+	"encoding/json"
 	"time"
 )
 
 type Card struct {
-	ID          int64          `json:"id"`
-	Name        string         `json:"name"`
-	Type        string         `json:"type"`
-	FrameType   string         `json:"frame_type"`
-	Archetype   sql.NullString `json:"archetype"`
-	Attribute   sql.NullString `json:"attribute"`
-	Race        sql.NullString `json:"race"`
-	Level       sql.NullInt32  `json:"level"`
-	Attack      sql.NullInt32  `json:"attack"`
-	Defense     sql.NullInt32  `json:"defense"`
-	Description string         `json:"description"`
-	RawCardInfo string         `json:"raw_card_info"`
+	ID          int64           `json:"id"`
+	Name        string          `json:"name"`
+	Type        string          `json:"type"`
+	FrameType   string          `json:"frame_type"`
+	Archetype   sql.NullString  `json:"archetype"`
+	Attribute   sql.NullString  `json:"attribute"`
+	Race        sql.NullString  `json:"race"`
+	Level       sql.NullInt32   `json:"level"`
+	Attack      sql.NullInt32   `json:"attack"`
+	Defense     sql.NullInt32   `json:"defense"`
+	Description string          `json:"description"`
+	RawCardInfo json.RawMessage `json:"raw_card_info"`
 }
 
 type CardsInDeck struct {

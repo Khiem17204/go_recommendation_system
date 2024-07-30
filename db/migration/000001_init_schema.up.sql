@@ -10,7 +10,7 @@ CREATE TABLE "cards" (
   "attack" int,
   "defense" int,
   "description" varchar NOT NULL,
-  "raw_card_info" varchar NOT NULL
+  "raw_card_info" JSONB NOT NULL
 );
 
 CREATE TABLE "decks" (

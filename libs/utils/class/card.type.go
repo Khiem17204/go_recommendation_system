@@ -29,9 +29,9 @@ type RawCardInfo struct {
 	Type          string      `json:"type"`
 	FrameType     string      `json:"frameType"`
 	Desc          string      `json:"desc"`
-	Atk           int         `json:"atk,omitempty"`
-	Def           int         `json:"def,omitempty"`
-	Level         int         `json:"level,omitempty"`
+	Atk           *int        `json:"atk,omitempty"`
+	Def           *int        `json:"def,omitempty"`
+	Level         *int        `json:"level,omitempty"`
 	Race          string      `json:"race"`
 	Attribute     string      `json:"attribute,omitempty"`
 	Archetype     string      `json:"archetype"`
@@ -49,9 +49,11 @@ type NormalizedCard struct {
 	Type        string
 	FrameType   string
 	Archetype   string
+	Attribute   string
 	Race        string
 	Attack      int
 	Defense     int
+	Level       int
 	Desc        string
 	Image       string
 	CardSets    []string
