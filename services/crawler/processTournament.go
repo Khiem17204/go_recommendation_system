@@ -52,6 +52,8 @@ func (pt *processTournament) processTournament() []int {
 		fmt.Println("Error:", readErr)
 		return nil
 	}
+
+	defer pt.databaseConn.Close()
 	var tournament utils.Tournament
 	// TODO: accept tournament data, with one column to verify if the tournament is already processed
 	err = json.Unmarshal(body, &tournament)
