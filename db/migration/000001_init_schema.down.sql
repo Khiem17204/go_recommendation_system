@@ -1,0 +1,5 @@
+DROP TABLE IF EXISTS cards_in_deck;
+DROP TABLE IF EXISTS decks;
+DROP TABLE IF EXISTS tournaments;
+DROP TABLE IF EXISTS cards;
+
