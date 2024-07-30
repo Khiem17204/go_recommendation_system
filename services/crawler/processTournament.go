@@ -27,40 +27,33 @@ type ProcessTournament interface {
 	upsertDeck() []int
 }
 
-func NewProcessTournament(id string) *processTournament {
-	databaseConn, err := database.NewDatabaseManager("go_rec_sys")
-	if err != nil {
-		fmt.Println("Error:", err)
-		return nil
-	}
+func NewProcessTournament(id string, databaseConn *database.DatabaseManager) *processTournament {
 	return &processTournament{
 		tournamentID: id,
 		databaseConn: databaseConn,
 	}
 }
 
-func (pt *processTournament) processTournament() []int {
+func (pt *processTournament) processTournament() bool {
 	// Send GET request to the tournament URL
 	res, err := http.Get("https://ygoprodeck.com/api/tournament/getTournament.php?id=" + pt.tournamentID)
 	if err != nil {
 		fmt.Println("Error:", err)
-		return nil
+		return false
 	}
 	defer res.Body.Close()
 	body, readErr := io.ReadAll(res.Body)
 	if readErr != nil {
 		fmt.Println("Error:", readErr)
-		return nil
+		return false
 	}
-
-	defer pt.databaseConn.Close()
 	var tournament utils.Tournament
 	// TODO: accept tournament data, with one column to verify if the tournament is already processed
 	err = json.Unmarshal(body, &tournament)
 	pt.saveTournament(tournament)
 	if err != nil {
 		fmt.Println("Error parsing JSON:", err)
-		return nil
+		return false
 	}
 	// for every deck URL, create a new processDeck object -> do upsert operation -> return list of deckID in RDS
 	for _, deck := range tournament.Listings {
@@ -70,20 +63,21 @@ func (pt *processTournament) processTournament() []int {
 			deck_id := url_splited[len(url_splited)-1]
 			fmt.Println("deck_id:", deck_id)
 			// upsert operation, can ultilize go routine to speed up the process by running concurrently all the upsert operation
-			pd := NewProcessDeck(deck_id, pt.tournamentID)
+			pd := NewProcessDeck(deck_id, pt.tournamentID, pt.databaseConn)
 			cur_deck, err := pd.getDeck()
 			if err != nil {
 				fmt.Println("Error:", err)
-				return nil
+				return false
 			}
 			// upsert deck into the database
 			pd.upsertDeck(*cur_deck)
 			fmt.Println("Insert deck ", deck_id, "successfully")
-			go pd.upsertCard(*cur_deck)
+			pd.upsertCard(*cur_deck)
+			fmt.Println("Insert card into", deck_id, "successfully")
 		}
 
 	}
-	return nil
+	return true
 }
 
 func (pt *processTournament) saveTournament(tournament utils.Tournament) (bool, error) {
@@ -93,6 +87,12 @@ func (pt *processTournament) saveTournament(tournament utils.Tournament) (bool, 
 		fmt.Println("Error parsing event date:", err)
 		return false, err
 	}
+	raw_tournament_info, err := json.Marshal(tournament)
+	if err != nil {
+		fmt.Println("Error:", err)
+		return false, err
+	}
+
 	data := db.CreateTournamentParams{
 		ID:                int64(tournament.ID),
 		TournamentName:    tournament.Name,
@@ -100,7 +100,7 @@ func (pt *processTournament) saveTournament(tournament utils.Tournament) (bool, 
 		EventDate:         eventDate,
 		PlayerCount:       sql.NullInt32{Int32: int32(tournament.PlayerCount), Valid: true},
 		Format:            tournament.Format,
-		RawTournamentInfo: "test 1",
+		RawTournamentInfo: string(raw_tournament_info),
 	}
 	res, err := pt.databaseConn.AddTournament(data)
 	if err != nil {

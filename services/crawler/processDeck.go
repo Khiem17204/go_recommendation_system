@@ -18,12 +18,7 @@ type processDeck struct {
 	databaseConn  *database.DatabaseManager
 }
 
-func NewProcessDeck(deck_id string, tournament_id string) *processDeck {
-	databaseConn, err := database.NewDatabaseManager("go_rec_sys")
-	if err != nil {
-		fmt.Println("Error:", err)
-		return nil
-	}
+func NewProcessDeck(deck_id string, tournament_id string, databaseConn *database.DatabaseManager) *processDeck {
 	return &processDeck{
 		deck_id:       deck_id,
 		tournament_id: tournament_id,
@@ -104,6 +99,10 @@ func (p *processDeck) upsertCard(deck utils.Deck) (bool, error) {
 func (p *processDeck) upsertDeck(deck utils.Deck) (bool, error) {
 	rawDeckInfo := [][]string{deck.Maindeck, deck.Extradeck, deck.Sidedeck}
 	jsonData, err := json.Marshal(rawDeckInfo)
+	if err != nil {
+		fmt.Println("Error: while marshalling deck info", err)
+		return false, err
+	}
 	int_tournament_id, err := strconv.Atoi(p.tournament_id)
 	if err != nil {
 		fmt.Println("Error: while converting tournament ID to int", err)

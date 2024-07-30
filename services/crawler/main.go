@@ -4,8 +4,10 @@ import (
 	"encoding/json"
 	"fmt"
 	utils "go-rec-sys/libs/utils/class"
+	database "go-rec-sys/libs/utils/database"
 	"io"
 	"net/http"
+	"sync"
 )
 
 // API for get tournaments data from ygoprodeck.com
@@ -35,35 +37,58 @@ func fetchAllTournament() ([]utils.Tournament, error) {
 	return data.Data, nil
 }
 
-// function to fetch tournament detail: all deck -> move to new file: processTournament.go
-func fetchTournament(id string) ([]utils.Deck, error) {
-	// construct endpoint
-	// get process endpoint
-	// parse json into deck object
-	// return []deck object
-	return nil, nil
+func processByBatch(tournaments []utils.Tournament) bool {
+	databaseConn, err := database.NewDatabaseManager("go_rec_sys")
+	if err != nil {
+		fmt.Println("Error:", err)
+		return false
+	}
+	for i := 0; i < len(tournaments); i += 1 {
+		id := fmt.Sprintf("%d", tournaments[i].ID)
+		pt := NewProcessTournament(id, databaseConn)
+		pt.processTournament()
+	}
+	databaseConn.Close()
+	return true
+}
+
+func crawlDeck() {
+	tournaments, err := fetchAllTournament()
+	if err != nil {
+		fmt.Println("Error:", err)
+		return
+	}
+
+	// Create a wait group to synchronize goroutines
+	var wg sync.WaitGroup
+
+	// Process by batch of 20, do parallel processing
+	for i := 0; i < len(tournaments); i += 20 {
+		wg.Add(1)
+		go func(start int) {
+			defer wg.Done()
+			end := start + 20
+			if end > len(tournaments) {
+				end = len(tournaments)
+			}
+			fmt.Printf("Processing batch %d to %d\n", start, end-1)
+			processByBatch(tournaments[start:end])
+		}(i)
+	}
+
+	// Wait for all goroutines to finish
+	wg.Wait()
+	fmt.Println("All batches processed")
+}
+
+func crawlCard() {
+	ch := NewCardHelper("https://db.ygoprodeck.com/api/v7/cardinfo.php")
+	fmt.Println("start upsert card")
+	ch.saveAllCards()
+	fmt.Println("finish upsert card")
 }
 
 func main() {
-	// https://ygoprodeck.com/tournament/niagara-falls-wcq-regional-1935
-	pt := NewProcessTournament("1935")
-	fmt.Println("start upsert deck")
-	pt.processTournament()
-	fmt.Println("finish upsert deck")
-	// 	pt.tournamentName = "niagara falls wcq regional"
-	// 	pt.tournamentID = 1935
-	// 	url := pt.getURL()
-	// 	res, err := http.Get(url)
-	// 	if err != nil {
-	// 		// Handle the error
-	// 		fmt.Println("Error:", err)
-	// 		return
-	// 	}
-	// 	defer res.Body.Close()
-	// 	// Read the response body
-	// 	body, readErr := io.ReadAll(res.Body)
-	// 	deckURL := pt.extractDeckURLs(string(body))
-
-	// 	fmt.Println(deckURL[0], readErr)
-
+	crawlCard()
+	crawlDeck()
 }
