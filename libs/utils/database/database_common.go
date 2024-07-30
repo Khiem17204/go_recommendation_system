@@ -12,6 +12,11 @@ import (
 
 type DatabaseManager struct {
 	querier db.Querier
+	conn    *sql.DB
+}
+
+func (dm *DatabaseManager) Close() error {
+	return dm.conn.Close()
 }
 
 func NewDatabaseManager(dbName string) (*DatabaseManager, error) {
@@ -34,6 +39,7 @@ func NewDatabaseManager(dbName string) (*DatabaseManager, error) {
 
 	return &DatabaseManager{
 		querier: db.New(conn),
+		conn:    conn,
 	}, nil
 }
 
