@@ -24,7 +24,7 @@ sqlc:
 	sqlc generate
 
 start-crawl:
-	cd services/ || go run main.go processDeck.go processTournament.go card_helper.go
+	cd services/crawler || go run main.go processDeck.go processTournament.go card_helper.go
 
 getdata:
 	make createdb || make migrateup || make start-crawl
