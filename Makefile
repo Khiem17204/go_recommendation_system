@@ -24,9 +24,9 @@ sqlc:
 	sqlc generate
 
 start-crawl:
-	cd services/ || go run main.go processDeck.go processTournament.go card_helper.go
+	cd services/ && go run main.go processDeck.go processTournament.go card_helper.go
 
 getdata:
-	make createdb || make migrateup || make start-crawl
+	make createdb && make migrateup && make start-crawl
 
 .PHONY: postgres createdb dropdb docker_createdb docker_dropdb migrateup migratedown sqlc getdata start-crawl
