@@ -1,0 +1,17 @@
+version: '3.8'
+
+services:
+  server:
+    build: ./services/server
+    ports:
+      - "8000:8000"
+
+  crawler:
+    build: ./services/crawler
+    ports:
+      - "8001:8001"
+
+  recommendation:
+    build: ./services/recommendation_system
+    ports:
+      - "8002:8002"
