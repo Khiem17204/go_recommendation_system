@@ -1,0 +1,28 @@
+syntax = "proto3";
+
+package proxy;
+
+option go_package = "github.com/Khiem17204/go_recommendation_system/services/proxy/proto";
+
+// gRPC service for proxying recommendation requests
+service RecommendationService {
+  rpc CardRecommend (RecommendRequest) returns (CardResponse);
+  rpc DeckRecommend (RecommendRequest) returns (DeckResponse);
+}
+
+// Shared input request for both endpoints
+message RecommendRequest {
+  repeated string cards = 1;
+}
+
+// gRPC response for card recommendations
+message CardResponse {
+  string status = 1;
+  repeated string cards = 2;
+}
+
+// gRPC response for deck recommendations
+message DeckResponse {
+  string status = 1;
+  repeated string decks = 2;
+}
