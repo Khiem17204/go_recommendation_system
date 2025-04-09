@@ -1,0 +1,24 @@
+syntax = "proto3";
+
+package recommend;
+
+option go_package = "github.com/Khiem17204/go_recommendation_system/services/proxy/proto/recommend";
+
+service RecommendationService {
+  rpc CardRecommend (RecommendRequest) returns (CardResponse);
+  rpc DeckRecommend (RecommendRequest) returns (DeckResponse);
+}
+
+message RecommendRequest {
+  repeated string cards = 1;
+}
+
+message CardResponse {
+  string status = 1;
+  repeated string cards = 2;
+}
+
+message DeckResponse {
+    string status = 1;
+    repeated string decks = 2;
+}
