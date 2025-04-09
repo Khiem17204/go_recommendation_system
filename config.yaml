@@ -1,0 +1,214 @@
+# config.yaml
+
+apiVersion: v1
+kind: PersistentVolumeClaim
+metadata:
+  name: postgres-pvc
+spec:
+  accessModes:
+    - ReadWriteOnce
+  resources:
+    requests:
+      storage: 1Gi
+
+---
+
+apiVersion: apps/v1
+kind: Deployment
+metadata:
+  name: postgres
+spec:
+  replicas: 1
+  selector:
+    matchLabels:
+      app: postgres
+  template:
+    metadata:
+      labels:
+        app: postgres
+    spec:
+      containers:
+      - name: postgres
+        image: postgres:15
+        ports:
+        - containerPort: 5432
+        env:
+        - name: POSTGRES_USER
+          value: "user"
+        - name: POSTGRES_PASSWORD
+          value: "password"
+        - name: POSTGRES_DB
+          value: "yourdb"
+        volumeMounts:
+        - mountPath: /var/lib/postgresql/data
+          name: postgres-storage
+      volumes:
+      - name: postgres-storage
+        persistentVolumeClaim:
+          claimName: postgres-pvc
+
+---
+
+apiVersion: v1
+kind: Service
+metadata:
+  name: postgres
+spec:
+  ports:
+  - port: 5432
+  selector:
+    app: postgres
+
+---
+
+apiVersion: apps/v1
+kind: Deployment
+metadata:
+  name: server
+spec:
+  replicas: 1
+  selector:
+    matchLabels:
+      app: server
+  template:
+    metadata:
+      labels:
+        app: server
+    spec:
+      containers:
+      - name: server
+        image: your-server-image
+        ports:
+        - containerPort: 8000
+
+---
+
+apiVersion: v1
+kind: Service
+metadata:
+  name: server
+spec:
+  ports:
+  - port: 8000
+  selector:
+    app: server
+
+---
+
+apiVersion: batch/v1
+kind: Job
+metadata:
+  name: crawler-job
+spec:
+  template:
+    spec:
+      containers:
+      - name: crawler
+        image: your-crawler-image
+        command: ["your-command"] # Replace with the command to run the crawler
+        ports:
+        - containerPort: 8001
+      restartPolicy: Never
+
+---
+
+apiVersion: v1
+kind: Service
+metadata:
+  name: recommendation-system
+spec:
+  ports:
+  - port: 8002
+  selector:
+    app: recommendation-system
+
+---
+
+apiVersion: apps/v1
+kind: Deployment
+metadata:
+  name: recommendation-system
+spec:
+  replicas: 1
+  selector:
+    matchLabels:
+      app: recommendation-system
+  template:
+    metadata:
+      labels:
+        app: recommendation-system
+    spec:
+      containers:
+      - name: recommendation-system
+        image: your-recommendation-image
+        ports:
+        - containerPort: 8002
+
+---
+
+apiVersion: v1
+kind: Service
+metadata:
+  name: proxy
+spec:
+  ports:
+  - port: 50051
+  selector:
+    app: proxy
+
+---
+
+apiVersion: apps/v1
+kind: Deployment
+metadata:
+  name: proxy
+spec:
+  replicas: 1
+  selector:
+    matchLabels:
+      app: proxy
+  template:
+    metadata:
+      labels:
+        app: proxy
+    spec:
+      containers:
+      - name: proxy
+        image: your-proxy-image
+        ports:
+        - containerPort: 50051
+
+---
+
+apiVersion: v1
+kind: Service
+metadata:
+  name: vector-store
+spec:
+  ports:
+  - port: 60051
+  selector:
+    app: vector-store
+
+---
+
+apiVersion: apps/v1
+kind: Deployment
+metadata:
+  name: vector-store
+spec:
+  replicas: 1
+  selector:
+    matchLabels:
+      app: vector-store
+  template:
+    metadata:
+      labels:
+        app: vector-store
+    spec:
+      containers:
+      - name: vector-store
+        image: your-vectorstore-image
+        ports:
+        - containerPort: 60051
+
