@@ -4,13 +4,14 @@ import (
 	"database/sql"
 	"encoding/json"
 	"fmt"
-	db "go-rec-sys/db/sqlc"
-	utils "go-rec-sys/libs/utils/class"
-	database "go-rec-sys/libs/utils/database"
 	"io"
 	"net/http"
 	"strings"
 	"time"
+
+	db "github.com/Khiem17204/go_recommendation_system/libs/database/sqlc"
+	utils "github.com/Khiem17204/go_recommendation_system/libs/utils/class"
+	database "github.com/Khiem17204/go_recommendation_system/libs/utils/database"
 )
 
 // https://ygoprodeck.com/api/tournament/getTournament.php?id=1968/

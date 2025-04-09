@@ -3,11 +3,12 @@ package main
 import (
 	"encoding/json"
 	"fmt"
-	utils "go-rec-sys/libs/utils/class"
-	database "go-rec-sys/libs/utils/database"
 	"io"
 	"net/http"
 	"sync"
+
+	utils "github.com/Khiem17204/go_recommendation_system/libs/utils/class"
+	database "github.com/Khiem17204/go_recommendation_system/libs/utils/database"
 )
 
 // API for get tournaments data from ygoprodeck.com

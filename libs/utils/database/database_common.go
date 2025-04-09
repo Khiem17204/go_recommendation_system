@@ -4,8 +4,9 @@ import (
 	"context"
 	"database/sql"
 	"fmt"
-	db "go-rec-sys/db/sqlc"
 	"os"
+
+	db "github.com/Khiem17204/go_recommendation_system/libs/database/sqlc"
 
 	_ "github.com/lib/pq"
 )
