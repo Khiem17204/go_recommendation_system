@@ -43,3 +43,17 @@ services:
       - "50051:50051"
     depends_on:
       - kafka
+
+  vectorstore-card:
+    build:
+      context: ./vectorstore
+      dockerfile: Dockerfile.card
+    ports:
+      - "60051:60051"
+
+  vectorstore-deck:
+    build:
+      context: ./vectorstore
+      dockerfile: Dockerfile.deck
+    ports:
+      - "60052:60051"
