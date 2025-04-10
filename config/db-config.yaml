@@ -1,0 +1,11 @@
+# db-config.yaml
+apiVersion: v1
+kind: ConfigMap
+metadata:
+  name: db-config
+data:
+  DB_HOST: "localhost"
+  DB_PORT: "5432"
+  DB_NAME: "go_rec_sys"
+  POSTGRES_USER: "postgres"
+  POSTGRES_DB: "go_rec_sys"
