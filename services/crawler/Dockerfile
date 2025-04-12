@@ -1,11 +1,11 @@
 # Use the official Golang image to create a build artifact.
-FROM golang:1.19-alpine AS builder
+FROM golang:1.22.1-alpine AS builder
 
 # Set the Current Working Directory inside the container
 WORKDIR /app
 
 # Copy go mod and sum files
-COPY go.mod go.sum ./
+COPY services/crawler/go.mod services/crawler/go.sum ./
 
 # Download all dependencies. Dependencies will be cached if the go.mod and go.sum files are not changed
 RUN go mod download
@@ -16,8 +16,11 @@ COPY libs/utils/database/ ./libs/utils/database/
 COPY libs/database/sqlc/ ./libs/database/sqlc/
 COPY libs/utils/class/ ./libs/utils/class/
 
+# Set the Current Working Directory inside the container
+WORKDIR /app/services/crawler
+
 # Build the Go app
-RUN CGO_ENABLED=0 GOOS=linux go build -o crawler ./services/crawler
+RUN CGO_ENABLED=0 GOOS=linux go build -o /app/crawler
 
 # Start a new stage from scratch
 FROM alpine:3.14

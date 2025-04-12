@@ -8,7 +8,7 @@ spec:
     spec:
       containers:
       - name: deck-crawler
-        image: your-registry/go-recommendation-system:latest
+        image: go-recommendation-system/crawler:latest
         command: ["./crawler"]
         args: ["--mode", "deck"]
         env:
