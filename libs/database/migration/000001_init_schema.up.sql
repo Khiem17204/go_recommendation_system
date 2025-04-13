@@ -37,6 +37,12 @@ CREATE TABLE "tournaments" (
   "raw_tournament_info" varchar NOT NULL
 );
 
+CREATE TABLE IF NOT EXISTS deck_embedding (
+    deck_id BIGINT PRIMARY KEY,
+    name VARCHAR NOT NULL,
+    embedding FLOAT8[] NOT NULL
+);
+
 CREATE INDEX ON "decks" ("tournament_id");
 
 CREATE INDEX ON "cards_in_deck" ("card_id");

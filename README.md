@@ -9,3 +9,9 @@ minikube start
 `./k8s-update.sh`
 
 `kubectl create job manual-card-crawler --from=cronjob/card-crawler-job`
+
+`kubectl create job manual-deck-crawler --from=cronjob/deck-crawler-job`
+
+create deck embedding, this takes quite a while
+
+`kubectl apply -f config/deck-embedding-worker.yaml`

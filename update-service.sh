@@ -37,9 +37,10 @@ validate_dockerfile() {
 # Function to build and push a service
 build_service() {
     local dockerfile_path=$1
-    local service_name=$(basename "$(dirname "$dockerfile_path")")
-    local dockerfile_dir=$(dirname "$dockerfile_path")
-
+    local base_dir=$(basename "$(dirname "$dockerfile_path")")
+    local dockerfile_name=$(basename "$dockerfile_path")
+    local suffix=$(echo "$dockerfile_name" | cut -d'.' -f2)  # e.g., 'worker' from Dockerfile.worker
+    local service_name="${base_dir}_${suffix}"
     echo -e "${GREEN}Building ${service_name} service using ${dockerfile_path}...${NC}"
 
     cd "$(git rev-parse --show-toplevel 2>/dev/null || pwd)"
