@@ -2,3 +2,4 @@ faiss-cpu
 sentence-transformers
 grpcio
 grpcio-tools
+psycopg2-binary

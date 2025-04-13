@@ -1,8 +1,27 @@
 FROM python:3.10-slim
 
 WORKDIR /app
-COPY . .
 
+# Install required system packages
+RUN apt-get update && apt-get install -y \
+    build-essential \
+    && rm -rf /var/lib/apt/lists/*
+
+# Install Python dependencies
+COPY requirements.txt .
 RUN pip install --no-cache-dir -r requirements.txt
 
-CMD ["python", "service.py", "deck"]
+# Copy application code
+COPY services/vector_store/main.py .
+COPY services/vector_store/db.py .
+COPY services/vector_store/search_pb2.py . 
+COPY services/vector_store/vector_pb2_grpc.py .
+
+# Make sure FAISS index mount exists
+VOLUME ["/faiss"]
+
+# Set the default path used by FAISS
+ENV INDEX_PATH=/faiss/deck_faiss.index
+ENV ID_MAP_PATH=/faiss/deck_ids.npy
+
+CMD ["python", "main.py"]

@@ -1,0 +1,32 @@
+apiVersion: apps/v1
+kind: Deployment
+metadata:
+  name: vector-store-service
+spec:
+  replicas: 1
+  selector:
+    matchLabels:
+      app: vector-store-service
+  template:
+    metadata:
+      labels:
+        app: vector-store-service
+    spec:
+      containers:
+        - name: faiss
+          image: go-recommendation-system/vector_store_deck:latest
+          imagePullPolicy: IfNotPresent
+          volumeMounts:
+          - name: faiss-index
+            mountPath: /faiss
+          ports:
+            - containerPort: 60051
+          envFrom:
+            - configMapRef:
+                name: db-config
+            - secretRef:
+                name: db-credentials
+      volumes:
+        - name: faiss-index
+          persistentVolumeClaim:
+            claimName: faiss-index-pvc

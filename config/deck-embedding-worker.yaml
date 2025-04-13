@@ -1,0 +1,27 @@
+apiVersion: apps/v1
+kind: Deployment
+metadata:
+  name: deck-embedding-worker
+spec:
+  replicas: 1
+  selector:
+    matchLabels:
+      app: deck-embedding-worker
+  template:
+    metadata:
+      labels:
+        app: deck-embedding-worker
+    spec:
+      containers:
+        - name: worker
+          image: docker.io/go-recommendation-system/vector_store_worker:latest
+          imagePullPolicy: IfNotPresent
+          envFrom:
+            - configMapRef:
+                name: db-config
+            - secretRef:
+                name: db-credentials
+          resources:
+            limits:
+              memory: "512Mi"
+              cpu: "500m"
