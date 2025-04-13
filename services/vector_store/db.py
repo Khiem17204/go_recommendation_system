@@ -45,3 +45,9 @@ def insert_deck_embedding(deck_id, name, embedding):
                 VALUES (%s, %s, %s)
             """, (deck_id, name, embedding.tolist()))
             conn.commit()
+
+def fetch_all_deck_embedding():
+    with get_conn() as conn:
+        with conn.cursor() as cur:
+            cur.execute("SELECT deck_id, name, embedding FROM deck_embedding")
+            return cur.fetchall()

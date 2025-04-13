@@ -83,7 +83,7 @@ func handleRecCard(w http.ResponseWriter, r *http.Request) {
 		return
 	}
 	defer conn.Close()
-	client := pb.NewSuggestionServiceClient(conn)
+	client := pb.NewRecommendationServiceClient(conn)
 
 	ctx, cancel := context.WithTimeout(context.Background(), 5*time.Second)
 	defer cancel()
@@ -109,7 +109,7 @@ func handleRecDeck(w http.ResponseWriter, r *http.Request) {
 		return
 	}
 	defer conn.Close()
-	client := pb.NewSuggestionServiceClient(conn)
+	client := pb.NewRecommendationServiceClient(conn)
 
 	ctx, cancel := context.WithTimeout(context.Background(), 5*time.Second)
 	defer cancel()

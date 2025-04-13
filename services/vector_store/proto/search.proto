@@ -1,0 +1,26 @@
+syntax = "proto3";
+
+package search;
+
+option go_package = "github.com/Khiem17204/go_recommendation_system/services/recommendation_system/proto/search";
+
+// The vector store service definition
+service VectorService {
+  rpc SearchSimilarCards (VectorRequest) returns (CardResult);
+  rpc SearchSimilarDecks (VectorRequest) returns (DeckResult);
+}
+
+// Input message: a list of cards (can be grouped or full deck)
+message VectorRequest {
+  repeated string cards = 1;
+}
+
+// Response message for card similarity
+message CardResult {
+  repeated string cards = 1;
+}
+
+// Response message for deck similarity
+message DeckResult {
+  repeated string decks = 1;
+}

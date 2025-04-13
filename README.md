@@ -12,6 +12,6 @@ minikube start
 
 `kubectl create job manual-deck-crawler --from=cronjob/deck-crawler-job`
 
-create deck embedding, this takes quite a while
+create deck embedding, this takes quite a while(~2h, I will look into parralelize this soon).
 
 `kubectl apply -f config/deck-embedding-worker.yaml`
