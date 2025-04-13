@@ -1,0 +1,4 @@
+github.com/Khiem17204/go_recommendation_system/libs v0.0.0-20250409195619-75026d9b7ca1 h1:dVJlKevfx1F4ZREXZs20FGLe35ZAHvuHRBSDc8g0MrI=
+github.com/Khiem17204/go_recommendation_system/libs v0.0.0-20250409195619-75026d9b7ca1/go.mod h1:1X+hhsVYye827jfI03OP0Xhl/a34pX33X/HfQii6Dkc=
+github.com/lib/pq v1.10.9 h1:YXG7RB+JIjhP29X+OtkiDnYaXQwpS4JEWq7dtCCRUEw=
+github.com/lib/pq v1.10.9/go.mod h1:AlVN5x4E4T544tWzH6hKfbfQvm3HdbOxrmggDNAPY9o=

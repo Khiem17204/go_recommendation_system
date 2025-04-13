@@ -1,0 +1,41 @@
+apiVersion: batch/v1
+kind: Job
+metadata:
+  name: db-init-job
+spec:
+  template:
+    spec:
+      containers:
+      - name: psql
+        image: postgres:15
+        command:
+          - sh
+          - -c
+          - |
+            echo "Waiting for Postgres..."
+            until pg_isready -h postgres -U $POSTGRES_USER -d $POSTGRES_DB; do sleep 2; done
+            psql -h postgres -U $POSTGRES_USER -d $POSTGRES_DB -f /init/init.sql
+        env:
+        - name: PGPASSWORD
+          valueFrom:
+            secretKeyRef:
+              name: db-credentials
+              key: POSTGRES_PASSWORD
+        - name: POSTGRES_USER
+          valueFrom:
+            configMapKeyRef:
+              name: db-config
+              key: POSTGRES_USER
+        - name: POSTGRES_DB
+          valueFrom:
+            configMapKeyRef:
+              name: db-config
+              key: POSTGRES_DB
+        volumeMounts:
+        - name: init-sql
+          mountPath: /init
+      restartPolicy: Never
+      volumes:
+      - name: init-sql
+        configMap:
+          name: init-sql

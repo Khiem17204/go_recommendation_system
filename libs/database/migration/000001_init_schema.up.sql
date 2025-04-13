@@ -37,10 +37,6 @@ CREATE TABLE "tournaments" (
   "raw_tournament_info" varchar NOT NULL
 );
 
-CREATE INDEX ON "cards" ("id");
-
-CREATE INDEX ON "decks" ("id");
-
 CREATE INDEX ON "decks" ("tournament_id");
 
 CREATE INDEX ON "cards_in_deck" ("card_id");

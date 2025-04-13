@@ -2,9 +2,11 @@ package main
 
 import (
 	"encoding/json"
+	"flag"
 	"fmt"
 	"io"
 	"net/http"
+	"os"
 	"sync"
 
 	utils "github.com/Khiem17204/go_recommendation_system/libs/utils/class"
@@ -41,23 +43,23 @@ func fetchAllTournament() ([]utils.Tournament, error) {
 func processByBatch(tournaments []utils.Tournament) bool {
 	databaseConn, err := database.NewDatabaseManager("go_rec_sys")
 	if err != nil {
-		fmt.Println("Error:", err)
+		fmt.Printf("Error connecting to database: %v\n", err)
 		return false
 	}
+	defer databaseConn.Close()
+
 	for i := 0; i < len(tournaments); i += 1 {
 		id := fmt.Sprintf("%d", tournaments[i].ID)
 		pt := NewProcessTournament(id, databaseConn)
 		pt.processTournament()
 	}
-	databaseConn.Close()
 	return true
 }
 
-func crawlDeck() {
+func crawlDeck() error {
 	tournaments, err := fetchAllTournament()
 	if err != nil {
-		fmt.Println("Error:", err)
-		return
+		return fmt.Errorf("error fetching tournaments: %v", err)
 	}
 
 	// Create a wait group to synchronize goroutines
@@ -73,23 +75,62 @@ func crawlDeck() {
 				end = len(tournaments)
 			}
 			fmt.Printf("Processing batch %d to %d\n", start, end-1)
-			processByBatch(tournaments[start:end])
+			if !processByBatch(tournaments[start:end]) {
+				fmt.Printf("Error processing batch %d to %d\n", start, end-1)
+			}
 		}(i)
 	}
 
 	// Wait for all goroutines to finish
 	wg.Wait()
 	fmt.Println("All batches processed")
+	return nil
 }
 
-func crawlCard() {
+func crawlCard() error {
+	databaseConn, err := database.NewDatabaseManager("go_rec_sys")
+	if err != nil {
+		return fmt.Errorf("error connecting to database: %v", err)
+	}
+	defer databaseConn.Close()
+
 	ch := NewCardHelper("https://db.ygoprodeck.com/api/v7/cardinfo.php")
-	fmt.Println("start upsert card")
-	ch.saveAllCards()
-	fmt.Println("finish upsert card")
+	fmt.Println("Starting card crawling...")
+	success, err := ch.saveAllCards()
+	if err != nil {
+		return fmt.Errorf("error saving cards: %v", err)
+	}
+	if !success {
+		return fmt.Errorf("failed to save all cards")
+	}
+	fmt.Println("Finished card crawling")
+	return nil
 }
 
 func main() {
-	crawlCard()
-	crawlDeck()
+	// Parse command line arguments
+	mode := flag.String("mode", "", "Crawler mode: 'card' or 'deck'")
+	flag.Parse()
+
+	if *mode == "" {
+		fmt.Println("Please specify a mode: --mode=card or --mode=deck")
+		os.Exit(1)
+	}
+
+	// Run the appropriate crawler based on mode
+	var err error
+	switch *mode {
+	case "card":
+		err = crawlCard()
+	case "deck":
+		err = crawlDeck()
+	default:
+		fmt.Printf("Invalid mode: %s\n", *mode)
+		os.Exit(1)
+	}
+
+	if err != nil {
+		fmt.Printf("Error during crawling: %v\n", err)
+		os.Exit(1)
+	}
 }

@@ -65,7 +65,6 @@ func (p *processDeck) upsertCard(deck utils.Deck) (bool, error) {
 			return false, err
 		}
 		frequencyCard[card_id]++
-
 	}
 
 	for _, card := range deck.Extradeck {

@@ -1,0 +1,7 @@
+Recreate the ConfigMap if you update the SQL
+
+`kubectl create configmap init-sql --from-file=init.sql --dry-run=client -o yaml | kubectl apply -f -`
+
+then update the postgres deployment by
+
+`kubectl apply -f config/postgres-deployment.yaml`
